@@ -246,4 +246,236 @@ document.querySelectorAll('button, .cta-button, .proyecto, .about-card').forEach
   element.addEventListener('mouseleave', function() {
     this.style.boxShadow = '';
   });
+});
+
+// Chat Widget de IA
+class ChatWidget {
+  constructor() {
+    this.chatButton = document.getElementById('chatButton');
+    this.chatWindow = document.getElementById('chatWindow');
+    this.closeChat = document.getElementById('closeChat');
+    this.chatInput = document.getElementById('chatInput');
+    this.sendButton = document.getElementById('sendButton');
+    this.chatMessages = document.getElementById('chatMessages');
+    this.isOpen = false;
+    this.isTyping = false;
+    
+    this.init();
+  }
+  
+  init() {
+    // Event listeners
+    this.chatButton.addEventListener('click', () => this.toggleChat());
+    this.closeChat.addEventListener('click', () => this.closeChatWindow());
+    this.sendButton.addEventListener('click', () => this.sendMessage());
+    this.chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.sendMessage();
+    });
+    
+    // Auto-open chat after 3 seconds
+    setTimeout(() => {
+      if (!this.isOpen) {
+        this.showWelcomeMessage();
+      }
+    }, 3000);
+  }
+  
+  toggleChat() {
+    if (this.isOpen) {
+      this.closeChatWindow();
+    } else {
+      this.openChatWindow();
+    }
+  }
+  
+  openChatWindow() {
+    this.chatWindow.classList.add('active');
+    this.isOpen = true;
+    this.chatInput.focus();
+    
+    // Animación de entrada
+    this.chatWindow.style.animation = 'chatWindowSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    // Crear confeti al abrir
+    createConfetti();
+  }
+  
+  closeChatWindow() {
+    this.chatWindow.classList.remove('active');
+    this.isOpen = false;
+  }
+  
+  showWelcomeMessage() {
+    const welcomeMessages = [
+      "¡Hola! Soy tu asistente IA personal. ¿En qué puedo ayudarte hoy? 💕",
+      "¡Bienvenida! Estoy aquí para ayudarte con cualquier pregunta sobre Heily y su portafolio! 🌸",
+      "¡Hola! ¿Te gustaría saber más sobre los proyectos de Heily o sus habilidades? ✨"
+    ];
+    
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    this.addBotMessage(randomMessage);
+  }
+  
+  sendMessage() {
+    const message = this.chatInput.value.trim();
+    if (!message || this.isTyping) return;
+    
+    // Agregar mensaje del usuario
+    this.addUserMessage(message);
+    this.chatInput.value = '';
+    
+    // Mostrar indicador de escritura
+    this.showTypingIndicator();
+    
+    // Simular respuesta de IA
+    setTimeout(() => {
+      this.hideTypingIndicator();
+      this.generateAIResponse(message);
+    }, 1500 + Math.random() * 1000);
+  }
+  
+  addUserMessage(text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message user-message';
+    messageDiv.innerHTML = `
+      <div class="message-avatar">👤</div>
+      <div class="message-content">
+        <p>${this.escapeHtml(text)}</p>
+        <span class="message-time">${this.getCurrentTime()}</span>
+      </div>
+    `;
+    
+    this.chatMessages.appendChild(messageDiv);
+    this.scrollToBottom();
+  }
+  
+  addBotMessage(text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot-message';
+    messageDiv.innerHTML = `
+      <div class="message-avatar">🌸</div>
+      <div class="message-content">
+        <p>${this.escapeHtml(text)}</p>
+        <span class="message-time">${this.getCurrentTime()}</span>
+      </div>
+    `;
+    
+    this.chatMessages.appendChild(messageDiv);
+    this.scrollToBottom();
+  }
+  
+  showTypingIndicator() {
+    this.isTyping = true;
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot-message typing-indicator-message';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+      <div class="message-avatar">🌸</div>
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    
+    this.chatMessages.appendChild(typingDiv);
+    this.scrollToBottom();
+  }
+  
+  hideTypingIndicator() {
+    this.isTyping = false;
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+      typingIndicator.remove();
+    }
+  }
+  
+  generateAIResponse(userMessage) {
+    const responses = this.getAIResponses(userMessage.toLowerCase());
+    const response = responses[Math.floor(Math.random() * responses.length)];
+    this.addBotMessage(response);
+  }
+  
+  getAIResponses(userMessage) {
+    const responses = {
+      default: [
+        "¡Qué interesante! Me encanta tu curiosidad! 🌸",
+        "¡Excelente pregunta! Déjame pensar en eso... ✨",
+        "¡Gracias por preguntar! Te ayudo con eso 💕",
+        "¡Oh, qué pregunta tan genial! 🌟"
+      ],
+      hola: [
+        "¡Hola! ¡Qué gusto verte por aquí! 🌸",
+        "¡Hola! ¿Cómo estás hoy? ¡Espero que muy bien! 💕",
+        "¡Hola! ¡Bienvenida al portafolio de Heily! ✨"
+      ],
+      heily: [
+        "¡Heily es una desarrolladora increíble! Le encanta crear diseños únicos inspirados en Hello Kitty 🌸",
+        "Heily es muy creativa y apasionada por el desarrollo web y el diseño UI/UX! ✨",
+        "¡Heily tiene un talento especial para combinar tecnología con belleza! 💕"
+      ],
+      proyecto: [
+        "¡Los proyectos de Heily son súper creativos! Cada uno tiene su toque especial 🌸",
+        "Heily trabaja en proyectos que combinan funcionalidad con diseño hermoso ✨",
+        "¡Los proyectos de Heily siempre tienen ese toque Hello Kitty que los hace únicos! 💕"
+      ],
+      hello: [
+        "¡Hello Kitty es la inspiración de Heily! 🎀",
+        "¡Hello Kitty y Heily son las mejores amigas! 🌸",
+        "¡Hello Kitty inspira todos los diseños de Heily! ✨"
+      ],
+      ayuda: [
+        "¡Por supuesto! Estoy aquí para ayudarte con cualquier pregunta sobre Heily y su trabajo 🌸",
+        "¡Me encanta ayudar! ¿Qué te gustaría saber? ✨",
+        "¡Estoy aquí para ti! ¿En qué puedo ayudarte? 💕"
+      ],
+      contacto: [
+        "¡Puedes contactar a Heily a través del formulario de contacto en su portafolio! 📧",
+        "¡Heily estará feliz de escuchar de ti! Usa la sección de contacto 🌸",
+        "¡No dudes en contactar a Heily! Le encanta conocer gente nueva ✨"
+      ],
+      habilidades: [
+        "¡Heily tiene muchas habilidades increíbles! Desarrollo web, diseño UI/UX, animaciones y mucha creatividad 🌟",
+        "Heily es experta en crear experiencias digitales hermosas y funcionales ✨",
+        "¡Las habilidades de Heily incluyen todo lo necesario para crear proyectos increíbles! 💕"
+      ]
+    };
+    
+    // Buscar respuesta específica
+    for (const [key, responseArray] of Object.entries(responses)) {
+      if (userMessage.includes(key)) {
+        return responseArray;
+      }
+    }
+    
+    return responses.default;
+  }
+  
+  scrollToBottom() {
+    setTimeout(() => {
+      this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }, 100);
+  }
+  
+  getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
+  
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+}
+
+// Inicializar el chat widget cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+  // ... existing code ...
+  
+  // Inicializar chat widget
+  new ChatWidget();
 }); 

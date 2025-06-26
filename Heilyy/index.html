@@ -204,8 +204,48 @@
   </main>
 
   <footer>
-    <p>Hecho con <span style="color: #ffb6d5;">♥</span> por Heily López | Hello Kitty fan</p>
+    <p>Hecho con <span style="color: #ffb6d5;">♥</span> por Heily López</p>
   </footer>
+
+  <!-- Chat Widget de IA -->
+  <div class="chat-widget" id="chatWidget">
+    <!-- Botón flotante del chat -->
+    <div class="chat-button" id="chatButton">
+      <div class="chat-icon">🤖</div>
+      <div class="chat-pulse"></div>
+    </div>
+    
+    <!-- Ventana del chat -->
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <div class="chat-avatar">
+          <span class="ai-avatar">🌸</span>
+        </div>
+        <div class="chat-info">
+          <h3>Asistente IA</h3>
+          <span class="status">En línea</span>
+        </div>
+        <button class="close-chat" id="closeChat">×</button>
+      </div>
+      
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+          <div class="message-avatar">🌸</div>
+          <div class="message-content">
+            <p>¡Hola! Soy tu asistente IA personal. ¿En qué puedo ayudarte hoy? 💕</p>
+            <span class="message-time">Ahora</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-input-container">
+        <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." maxlength="500">
+        <button class="send-button" id="sendButton">
+          <span>💌</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
